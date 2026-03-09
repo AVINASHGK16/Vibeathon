@@ -97,13 +97,19 @@ with col2:
 
 st.divider()
 
-# --- Analytics Dashboard ---
-st.subheader("📋 Link History")
-# Retrieve data, ordering by the most clicked links first
-df = pd.read_sql_query("SELECT short_id as 'Short ID', original_url as 'Original URL', clicks as 'Total Clicks' FROM links ORDER BY clicks DESC", conn)
+# --- Analytics Dashboard (SECURED) ---
+st.subheader("📋 Admin Dashboard")
+st.markdown("Enter the admin key to view all link history and analytics.")
 
-if not df.empty:
-    # Use container width and hide the ugly index column
-    st.dataframe(df, use_container_width=True, hide_index=True)
-else:
-    st.info("No links have been created yet. Be the first!")
+# Simple hackathon password protection
+admin_key = st.text_input("Admin Key:", type="password")
+
+if admin_key == "vibe2026":  # You can change this password to whatever you want
+    df = pd.read_sql_query("SELECT short_id as 'Short ID', original_url as 'Original URL', clicks as 'Total Clicks' FROM links ORDER BY clicks DESC", conn)
+    
+    if not df.empty:
+        st.dataframe(df, use_container_width=True, hide_index=True)
+    else:
+        st.info("No links have been created yet.")
+elif admin_key:
+    st.error("❌ Incorrect Admin Key.")
